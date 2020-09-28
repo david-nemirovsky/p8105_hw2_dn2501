@@ -14,7 +14,7 @@ library(readxl)
 
 Read the Mr. Trashwheel dataset:
 
-```{r}
+```{r trashwheel data}
 trashwheel_df = 
   read_xlsx(
     "./hw2_data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
@@ -29,7 +29,7 @@ trashwheel_df =
 
 Read the precipitation data:
 
-```{r}
+```{r precip data}
 precip_2018 = 
   read_excel(
     "./hw2_data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
@@ -53,7 +53,7 @@ precip_2017 =
 
 Now, combine annual precipitation:
 
-```{r}
+```{r combined precip data}
 month_df = 
   tibble(
     month = 1:12,
@@ -62,7 +62,8 @@ month_df =
 precip_df = 
   bind_rows(precip_2018, precip_2017)
 
+precip_df =
 left_join(precip_df, month_df, by = "month")
 ```
 
-This dataset contains information from the Mr. Trashwheel trash collector located in Baltimore, Maryland. Mr. Trashwheel collects trash as it enters the inner harbor and stores it in a dumpster. This dataset contains information on year, month, and trash collected, including some specific types of trash. There are a total of `r nrow(trashwheel_df)` rows in our data set. Additional data sheets include monthly precipitation data.
+This dataset contains information from the Mr. Trashwheel trash collector located in Baltimore, Maryland. Mr. Trashwheel collects trash as it enters the inner harbor and stores it in a dumpster. This dataset contains information on year, month, and trash collected, including some specific types of trash. There are a total of `r nrow(trashwheel_df)` rows in our data set. Additional data sheets include monthly precipitation data. The total precipitation in 2018 was `r precip_df %>% filter(year == 2018) %>% pull(total) %>% sum()` inches. The median number of sports balls found in a dumpster in 2017 was `r trashwheel_df %>% filter(year == 2017) %>% pull(sports_balls) %>% median()`.
