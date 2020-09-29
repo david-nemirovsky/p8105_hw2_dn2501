@@ -5,7 +5,7 @@ date: 9/30/20
 output: github_document
 ---
 
-```{r setup}
+```{r setup, message = FALSE}
 library(tidyverse)
 library(readxl)
 ```
@@ -78,8 +78,35 @@ transit_df =
   janitor::clean_names() %>% 
   select(line:entry, vending, ada) %>% 
   unite(route, route1:route11, sep = ", ", na.rm = TRUE) %>% 
-  relocate(station_latitude:station_longitude, .after = ada) %>% 
+  relocate(station_name, route) %>% 
+  arrange(station_name, route) %>% 
   mutate(entry = recode(entry, "YES" = TRUE, "NO" = FALSE))
 ```
 
-This dataset contains information about the entrances of all of the NYC subway stations. Some key variables are subway lines, routes, types of entry, presence of MetroCard vending machines, and whether or not that station entrance is ADA compliant. A variety of functions were used in order to tidy this data, including `clean_names` from the `janitor` package to rename the variables in snake-case. The functions`select`, `unite`, `relocate`, and `mutate` (from the `dplyr` package in `tidyverse`) were used to choose the appropriate data to study, collapse the "route#" variables into a single variable indicating train routes, reposition the columns into a more appealing order, and convert the "entry" variable from a character to a logical one.
+This dataset contains information about the entrances of all of the NYC subway stations. Some key variables are subway lines, routes, types of entry, presence of MetroCard vending machines, and whether or not that station entrance is ADA compliant. A variety of functions were used in order to tidy this data, including `clean_names` from the `janitor` package to rename the variables in snake-case. The functions`select`, `unite`, `relocate`, `arrange`, and `mutate` (from the `dplyr` package in `tidyverse`) were used to choose the appropriate data to study, collapse the "route#" variables into a single variable indicating train routes, re-position and rearrange the columns into a more appealing order, and convert the "entry" variable from a character to a logical one, respectively. The dataset is composed of `r nrow(transit_df)` rows and `r ncol(transit_df)` columns.
+
+#### Questions About Data:
+
+1. There are `r distinct(transit_df, station_name, route) %>% nrow()` distinct stations.
+2. Of these, only `r filter(transit_df, ada == TRUE) %>% distinct(station_name, route) %>% nrow()` stations are ADA compliant.
+3. Approximately `r round((filter(transit_df, vending == "NO", entry == TRUE) %>% nrow()) / (filter(transit_df, vending == "NO") %>% nrow()),3)*100`% of station entrances/exits without vending allow entrance.
+
+Now, reformat data to create separate variables for "route number" and "route name":
+
+```{r reformat data, message = FALSE}
+transit_reformed_df = 
+  read_csv("./hw2_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
+  janitor::clean_names() %>% 
+  select(line:entry, vending, ada) %>% 
+  mutate(across(route8:route11, as.character)) %>% 
+  pivot_longer(route1:route11,
+    names_to = "route_number",
+    names_prefix = "route",
+    values_to = "route_name",
+    values_drop_na = TRUE) %>% 
+  relocate(station_name, route_number, route_name) %>% 
+  arrange(station_name, route_number, route_name) %>% 
+  mutate(entry = recode(entry, "YES" = TRUE, "NO" = FALSE))
+```
+
+There are `r filter(transit_reformed_df, route_name == "A") %>% distinct(station_name, route_number) %>% nrow()` distinct stations that serve the A train. Of these, only `r filter(transit_reformed_df, route_name == "A", ada == TRUE) %>% distinct(station_name, route_number) %>% nrow()` stations are ADA compliant.
