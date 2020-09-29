@@ -72,24 +72,14 @@ This dataset contains information from the Mr. Trashwheel trash collector locate
 
 Read in, clean names, and select the appropriate NYC Transit dataset:
 
-```{r}
+```{r read and select data, message = FALSE}
 transit_df = 
   read_csv("./hw2_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
   janitor::clean_names() %>% 
-  select(line:entry, vending, ada)
+  select(line:entry, vending, ada) %>% 
+  unite(route, route1:route11, sep = ", ", na.rm = TRUE) %>% 
+  relocate(station_latitude:station_longitude, .after = ada) %>% 
+  mutate(entry = recode(entry, "YES" = TRUE, "NO" = FALSE))
 ```
 
-Create a single column for route instead of using multiple:
-
-```{r}
-transit_df = 
-  unite(transit_df, route, route1:route11, sep = ", ", na.rm = TRUE)
-```
-
-Convert "entry" from character to logical:
-
-```{r}
-transit_df = 
-  mutate(transit_df, entry = recode(entry, "YES" = TRUE, "NO" = FALSE))
-```
-
+This dataset contains information about the entrances of all of the NYC subway stations. Some key variables are subway lines, routes, types of entry, presence of MetroCard vending machines, and whether or not that station entrance is ADA compliant. A variety of functions were used in order to tidy this data, including `clean_names` from the `janitor` package to rename the variables in snake-case. The functions`select`, `unite`, `relocate`, and `mutate` (from the `dplyr` package in `tidyverse`) were used to choose the appropriate data to study, collapse the "route#" variables into a single variable indicating train routes, reposition the columns into a more appealing order, and convert the "entry" variable from a character to a logical one.
