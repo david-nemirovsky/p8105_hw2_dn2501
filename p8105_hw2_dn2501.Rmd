@@ -154,3 +154,22 @@ snp_df =
   rename(month = month_name)
 ```
 
+Read in and clean unemployment dataset:
+
+```{r clean unemployment data, message = FALSE}
+month_short_df = 
+  tibble(
+    month_short = c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"),
+    month = month.name)
+
+unemp_df = 
+  read_csv("./hw2_data/fivethirtyeight_datasets/unemployment.csv") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    jan:dec,
+    names_to = "month_short",
+    values_to = "unemployment") %>% 
+  left_join(month_short_df, by = "month_short") %>% 
+  select(year, month, unemployment)
+```
+
