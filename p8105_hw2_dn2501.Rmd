@@ -83,9 +83,9 @@ transit_df =
   mutate(entry = recode(entry, "YES" = TRUE, "NO" = FALSE))
 ```
 
-This dataset contains information about the entrances of all of the NYC subway stations. Some key variables are subway lines, routes, types of entry, presence of MetroCard vending machines, and whether or not that station entrance is ADA compliant. A variety of functions were used in order to tidy this data, including `clean_names` from the `janitor` package to rename the variables in snake-case. The functions`select`, `unite`, `relocate`, `arrange`, and `mutate` (from the `dplyr` package in `tidyverse`) were used to choose the appropriate data to study, collapse the "route#" variables into a single variable indicating train routes, re-position and rearrange the columns into a more appealing order, and convert the "entry" variable from a character to a logical one, respectively. The dataset is composed of `r nrow(transit_df)` rows and `r ncol(transit_df)` columns.
+This dataset contains information about the entrances of all of the NYC subway stations. Some key variables are subway lines, routes, types of entry, presence of MetroCard vending machines, and whether or not that station entrance is ADA compliant. A variety of functions were used in order to tidy this data, including `clean_names` from the `janitor` package to rename the variables in snake-case. The functions`select`, `unite`, `relocate`, `arrange`, and `mutate` (from the `dplyr` package in `tidyverse`) were used to choose the appropriate data to study, collapse the "route#" variables into a single variable indicating train routes, re-position and rearrange the columns into a more appealing order, and convert the "entry" character variable to a logical variable, respectively. The dataset is composed of `r nrow(transit_df)` rows and `r ncol(transit_df)` columns.
 
-#### Questions About Data:
+#### Answers to Questions about Data:
 
 1. There are `r distinct(transit_df, station_name, route) %>% nrow()` distinct stations.
 2. Of these, only `r filter(transit_df, ada == TRUE) %>% distinct(station_name, route) %>% nrow()` stations are ADA compliant.
@@ -140,7 +140,7 @@ pols_df =
   rename(month = month_name)
 ```
 
-Read in and clean S&P dataset:
+Read in and clean S&P 500 dataset:
 
 ```{r clean snp data, message= FALSE}
 snp_df = 
@@ -148,7 +148,8 @@ snp_df =
   janitor::clean_names() %>% 
   separate(date, into = c("month", "day", "year"), sep = "/") %>% 
   mutate(across(month:year, as.integer)) %>% 
-  left_join(month_df, by = "month") %>% 
+  arrange(year, month) %>% 
+  left_join(month_df, by = "month") %>%
   select(year:month_name) %>% 
   relocate(year, month_name) %>% 
   rename(month = month_name)
@@ -184,3 +185,4 @@ merged_df =
   rename(snp_close = close)
 ```
 
+The dataset `pols_df` contained information about the political parties of politicians in the Senate and House of Representatives, as well as the party of the President and governors from `r unite(pols_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(first)` to `r unite(pols_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(last)`. The `snp_df` dataset included the price at which the S&P 500 closed at the beginning of each month from `r unite(snp_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(first)` to `r unite(snp_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(last)`. The `unemp_df` dataset included national unemployment percentages from `r unite(unemp_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(first)` to `r unite(unemp_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(last)`. The merged dataset, `merged_df`, joins the 3 datasets above into a single one and consists of `r nrow(merged_df)` rows and `r ncol(merged_df)` columns. This dataset includes the key variables described above, but from `r unite(merged_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(first)` to `r unite(merged_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(last)`. This dataset can be used to assess how the dominance of a political party in the federal government can influence national economic prosperity.
