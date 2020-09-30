@@ -66,7 +66,11 @@ precip_df =
 left_join(precip_df, month_df, by = "month")
 ```
 
-This dataset contains information from the Mr. Trashwheel trash collector located in Baltimore, Maryland. Mr. Trashwheel collects trash as it enters the inner harbor and stores it in a dumpster. This dataset contains information on year, month, and trash collected, including some specific types of trash. There are a total of `r nrow(trashwheel_df)` rows in our data set. Additional data sheets include monthly precipitation data. The total precipitation in 2018 was `r precip_df %>% filter(year == 2018) %>% pull(total) %>% sum()` inches. The median number of sports balls found in a dumpster in 2017 was `r trashwheel_df %>% filter(year == 2017) %>% pull(sports_balls) %>% median()`.
+This dataset contains information from the Mr. Trashwheel trash collector located in Baltimore, Maryland. Mr. Trashwheel collects trash as it enters the inner harbor 
+and stores it in a dumpster. This dataset contains information on year, month, and trash collected, including some specific types of trash. There are a total of 
+`r nrow(trashwheel_df)` rows in our data set. Additional data sheets include monthly precipitation data. The total precipitation in 2018 was
+`r precip_df %>% filter(year == 2018) %>% pull(total) %>% sum()` inches. The median number of sports balls found in a dumpster in 2017 was 
+`r trashwheel_df %>% filter(year == 2017) %>% pull(sports_balls) %>% median()`.
 
 ## Problem 2
 
@@ -83,13 +87,19 @@ transit_df =
   mutate(entry = recode(entry, "YES" = TRUE, "NO" = FALSE))
 ```
 
-This dataset contains information about the entrances of all of the NYC subway stations. Some key variables are subway lines, routes, types of entry, presence of MetroCard vending machines, and whether or not that station entrance is ADA compliant. A variety of functions were used in order to tidy this data, including `clean_names` from the `janitor` package to rename the variables in snake-case. The functions`select`, `unite`, `relocate`, `arrange`, and `mutate` (from the `dplyr` package in `tidyverse`) were used to choose the appropriate data to study, collapse the "route#" variables into a single variable indicating train routes, re-position and rearrange the columns into a more appealing order, and convert the "entry" character variable to a logical variable, respectively. The dataset is composed of `r nrow(transit_df)` rows and `r ncol(transit_df)` columns.
+This dataset contains information about the entrances of all of the NYC subway stations. Some key variables are subway lines, routes, types of entry, presence of 
+MetroCard vending machines, and whether or not that station entrance is ADA compliant. A variety of functions were used in order to tidy this data, including 
+`clean_names` from the `janitor` package to rename the variables in snake-case. The functions`select`, `unite`, `relocate`, `arrange`, and `mutate` 
+(from the `dplyr` package in `tidyverse`) were used to choose the appropriate data to study, collapse the "route#" variables into a single variable indicating train routes, 
+re-position and rearrange the columns into a more appealing order, and convert the "entry" character variable to a logical variable, respectively. 
+The dataset is composed of `r nrow(transit_df)` rows and `r ncol(transit_df)` columns.
 
 #### Answers to Questions about Data:
 
 1. There are `r distinct(transit_df, station_name, route) %>% nrow()` distinct stations.
 2. Of these, only `r filter(transit_df, ada == TRUE) %>% distinct(station_name, route) %>% nrow()` stations are ADA compliant.
-3. Approximately `r round((filter(transit_df, vending == "NO", entry == TRUE) %>% nrow()) / (filter(transit_df, vending == "NO") %>% nrow()),3)*100`% of station entrances/exits without vending allow entrance.
+3. Approximately `r round((filter(transit_df, vending == "NO", entry == TRUE) %>% nrow()) / (filter(transit_df, vending == "NO") %>% nrow()),3)*100`% 
+of station entrances/exits without vending allow entrance.
 
 Now, reformat data to create separate variables for "route number" and "route name":
 
@@ -109,7 +119,8 @@ transit_reformed_df =
   mutate(entry = recode(entry, "YES" = TRUE, "NO" = FALSE))
 ```
 
-There are `r filter(transit_reformed_df, route_name == "A") %>% distinct(station_name, route_number) %>% nrow()` distinct stations that serve the A train. Of these, only `r filter(transit_reformed_df, route_name == "A", ada == TRUE) %>% distinct(station_name, route_number) %>% nrow()` stations are ADA compliant.
+There are `r filter(transit_reformed_df, route_name == "A") %>% distinct(station_name, route_number) %>% nrow()` distinct stations that serve the A train. Of these, only 
+`r filter(transit_reformed_df, route_name == "A", ada == TRUE) %>% distinct(station_name, route_number) %>% nrow()` stations are ADA compliant.
 
 ## Problem 3
 
@@ -185,4 +196,12 @@ merged_df =
   rename(snp_close = close)
 ```
 
-The dataset `pols_df` contained information about the political parties of politicians in the Senate and House of Representatives, as well as the party of the President and governors from `r unite(pols_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(first)` to `r unite(pols_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(last)`. The `snp_df` dataset included the price at which the S&P 500 closed at the beginning of each month from `r unite(snp_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(first)` to `r unite(snp_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(last)`. The `unemp_df` dataset included national unemployment percentages from `r unite(unemp_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(first)` to `r unite(unemp_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(last)`. The merged dataset, `merged_df`, joins the 3 datasets above into a single one and consists of `r nrow(merged_df)` rows and `r ncol(merged_df)` columns. This dataset includes the key variables described above, but from `r unite(merged_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(first)` to `r unite(merged_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(last)`. This dataset can be used to assess how the dominance of a political party in the federal government can influence national economic prosperity.
+The dataset `pols_df` contained information about the political parties of politicians in the Senate and House of Representatives, as well as the party of the President and governors from 
+`r unite(pols_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(first)` to `r unite(pols_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(last)`. 
+The `snp_df` dataset included the price at which the S&P 500 closed at the beginning of each month from `r unite(snp_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(first)` 
+to `r unite(snp_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(last)`. The `unemp_df` dataset included national unemployment percentages from 
+`r unite(unemp_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(first)` to `r unite(unemp_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(last)`. 
+The merged dataset, `merged_df`, joins the 3 datasets above into a single one and consists of `r nrow(merged_df)` rows and `r ncol(merged_df)` columns. 
+This dataset includes the key variables described above, but from `r unite(merged_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(first)` to 
+`r unite(merged_df, date, month:year, sep = " ") %>% pull(date) %>% pluck(last)`. This dataset can be used to assess how the dominance of a political party in the 
+federal government can influence national economic prosperity.
